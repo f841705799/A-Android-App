@@ -3,4 +3,7 @@
     <string name="Discover">Discover</string>
     <string name="Favourites">Favourites</string>
     <string name="Account">Account</string>
+    <string name="Sign">Sign in</string>
+    <string name="Order">Your Orders</string>
+    <string name="Settings">Settings</string>
 </resources>
