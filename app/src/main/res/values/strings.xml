@@ -6,4 +6,21 @@
     <string name="Sign">Sign in</string>
     <string name="Order">Your Orders</string>
     <string name="Settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="profile_header">Profile</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="Name_title">Your Name</string>
+    <string name="Phone_title">Phone</string>
+    <string name="Email_title">Email</string>
+
+    <!-- Sync Preferences -->
+    <string name="other_header">Others</string>
+    <string name="Logout_title">Logout</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>

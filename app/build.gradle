@@ -30,14 +30,15 @@ android {
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:31.3.0')
+    implementation platform('com.google.firebase:firebase-bom:31.5.0')
     implementation 'com.google.firebase:firebase-analytics'
+    implementation 'androidx.preference:preference:1.2.0'
     def nav_version = "2.5.3"
-    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+    implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
 
     // Required only if Facebook login support is required
     // Find the latest Facebook SDK releases here: https://goo.gl/Ce5L94
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'com.facebook.android:facebook-android-sdk:16.0.1'
 
     // Java language implementation
     implementation "androidx.navigation:navigation-fragment:$nav_version"

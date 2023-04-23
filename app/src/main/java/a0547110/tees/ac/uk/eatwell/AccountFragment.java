@@ -2,6 +2,7 @@ package a0547110.tees.ac.uk.eatwell;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -9,10 +10,12 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
@@ -36,15 +39,13 @@ public class AccountFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private LinearLayout signInButton;
+    private FirebaseUser user;
+    private TextView userName;
+    private LinearLayout SettingsButton;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    List<AuthUI.IdpConfig> providers = Arrays.asList(
-            new AuthUI.IdpConfig.EmailBuilder().build(),
-            new AuthUI.IdpConfig.PhoneBuilder().build(),
-            new AuthUI.IdpConfig.GoogleBuilder().build()
-            );
 
     public AccountFragment() {
         // Required empty public constructor
@@ -82,19 +83,36 @@ public class AccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_account, container, false);
+        userName = view.findViewById(R.id.ProfileName);
         signInButton = view.findViewById(R.id.Profile);
+        SettingsButton = view.findViewById(R.id.Settings);
+        FirebaseUser User = FirebaseAuth.getInstance().getCurrentUser();
+        updateUI(User);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signInLauncher.launch(
                         AuthUI.getInstance()
                                 .createSignInIntentBuilder()
-                                .setAvailableProviders(providers)
+                                .setLogo(R.drawable.baseline_food_bank_24)
+                                .setAvailableProviders(Arrays.asList(
+                                        new AuthUI.IdpConfig.EmailBuilder().build(),
+                                        new AuthUI.IdpConfig.PhoneBuilder()
+                                                .setDefaultCountryIso("gb")
+                                                .build(),
+                                        new AuthUI.IdpConfig.GoogleBuilder().build()
+                                ))
                                 .build()
                 );
             }
         });
-
+        SettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
@@ -115,12 +133,23 @@ public class AccountFragment extends Fragment {
         if (result.getResultCode() == RESULT_OK) {
             // Successfully signed in
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            // ...
+            updateUI(user);
         } else {
             // Sign in failed. If response is null the user canceled the
             // sign-in flow using the back button. Otherwise check
             // response.getError().getErrorCode() and handle the error.
             // ...
+        }
+    }
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
+            signInButton.setEnabled(false);
+            if (user.getDisplayName()==null || user.getDisplayName() == ""){
+                userName.setText("Welcome! User!");
+            }
+            else {
+                userName.setText("Welcome! " + user.getDisplayName());
+            }
         }
     }
 }
