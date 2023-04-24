@@ -5,7 +5,8 @@
         <EditTextPreference
             app:key="name"
             app:title="@string/Name_title"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            />
 
         <EditTextPreference
             app:key="phone"

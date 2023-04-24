@@ -116,6 +116,12 @@ public class AccountFragment extends Fragment {
         return view;
     }
 
+    public void onResume() {
+        super.onResume();
+        FirebaseUser User = FirebaseAuth.getInstance().getCurrentUser();
+        updateUI(User);
+    }
+
 
 
     // See: https://developer.android.com/training/basics/intents/result
@@ -148,8 +154,12 @@ public class AccountFragment extends Fragment {
                 userName.setText("Welcome! User!");
             }
             else {
-                userName.setText("Welcome! " + user.getDisplayName());
+                userName.setText("Welcome! " + user.getDisplayName() + "!");
             }
+        }
+        else {
+            signInButton.setEnabled(true);
+            userName.setText("Sign in");
         }
     }
 }
