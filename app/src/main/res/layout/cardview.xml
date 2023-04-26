@@ -14,10 +14,10 @@
         android:orientation="vertical">
 
         <!-- Media -->
-        <ImageView
+        <a0547110.tees.ac.uk.eatwell.MyImageView
+            android:id="@+id/card_image"
             android:layout_width="match_parent"
             android:layout_height="194dp"
-            app:srcCompat="@drawable/inside"
             android:scaleType="centerCrop"
             />
 
@@ -36,6 +36,7 @@
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 />
             <TextView
+                android:id="@+id/card_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -44,6 +45,7 @@
                 android:textColor="?android:attr/textColorSecondary"
                 />
             <TextView
+                android:id="@+id/card_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -64,13 +66,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:text="a1test"
+                android:text="Add to favorites"
                 style="?attr/borderlessButtonStyle"
                 />
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/card_direction_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="a2test"
+                android:text="Get directions"
                 style="?attr/borderlessButtonStyle"
                 />
         </LinearLayout>

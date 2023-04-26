@@ -19,10 +19,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import android.Manifest;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -34,6 +40,11 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 /**
@@ -55,6 +66,8 @@ public class DiscoverFragment extends Fragment {
     private ProgressBar progressBar;
     private String latitude;
     private String longitude;
+    private String Response;
+    private JSONObject jsonObject;
 
 
 
@@ -140,12 +153,17 @@ public class DiscoverFragment extends Fragment {
                         latitude = String.valueOf(currentlocation.getLatitude());
                         longitude = String.valueOf(currentlocation.getLongitude());
                         Log.d("DiscoverFragment", "onCreate: " + currentlocation.toString());
-                        initData();
+                        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latitude+"%2C"+longitude+"&radius=1500&type=restaurant&keyword=restaurant&key="+BuildConfig.MAPS_API_KEY;
+                        Log.d("DiscoverFragment", "initData: " + url);
+                        // Request a string response from the provided URL.
+                        sendRequestWithHttpURLConnection(url);
+
                     }
                     else {
                         Log.d("DiscoverFragment", "onCreate: location is null");
                     }
                 });
+
         mRecyclerView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         ShopAdapter = new ShopAdapter (getActivity (),list);
@@ -153,39 +171,88 @@ public class DiscoverFragment extends Fragment {
         mRecyclerView.setItemAnimator (new DefaultItemAnimator());
         mRecyclerView.setAdapter (ShopAdapter);
         mRecyclerView.addItemDecoration (new DividerItemDecoration (getActivity (), DividerItemDecoration.VERTICAL));
+
         return view;
     }
 
 
-    private void initData(){
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url ="https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+latitude+"%2C"+longitude+"&radius=1500&type=restaurant&keyword=&key="+BuildConfig.MAPS_API_KEY;
-        Log.d("DiscoverFragment", "initData: " + url);
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
-                        Log.d("DiscoverFragment", "onResponse: " + response);
-                    }
-                },
-                new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
-
-        for (int i = 0; i < 10; i++) {
-            Shop shop = new Shop(Integer.toString(i));
-            list.add (shop);
-        }
+    private void updateUI() {
         ShopAdapter.notifyDataSetChanged();
         progressBar.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
-}
+
+    private void sendRequestWithHttpURLConnection(String Url) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpsURLConnection connection = null;
+                BufferedReader reader = null;
+                try {
+                    URL url = new URL(Url);
+                    connection = (HttpsURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(8000);
+                    connection.setReadTimeout(8000);
+                    InputStream in = connection.getInputStream();
+                    reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                    Log.v("DiscoverFragment", response.toString());
+                    parseJSONWithJSONObject(response.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (connection != null) {
+                        connection.disconnect();
+
+                    }
+                }
+            }
+        }).start();
+    }
+
+        private void parseJSONWithJSONObject(String jsonData){
+            try {
+                JSONObject jsonObject = new JSONObject(jsonData);
+                if (jsonObject.getString("status").equals("OK")) {
+                    JSONArray results = jsonObject.getJSONArray("results");
+                    for (int i = 0; i < results.length(); i++) {
+                        JSONObject result = results.getJSONObject(i);
+                        String name = result.getString("name");
+                        String address = result.getString("vicinity");
+                        Double rating = result.getDouble("rating");
+                        String photo_url;
+                        try {
+                            String photo_reference = result.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+                            photo_url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference="+photo_reference+"&key="+BuildConfig.MAPS_API_KEY;
+                        }catch (Exception e){
+                            photo_url = "https://archive.org/download/no-photo-available/no-photo-available.png";
+                        }
+                        Shop shop = new Shop(name, address, photo_url, rating);
+                        list.add(shop);
+                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            updateUI();
+                        }
+                    });
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
