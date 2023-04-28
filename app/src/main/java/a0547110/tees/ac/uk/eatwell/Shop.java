@@ -7,12 +7,14 @@ public class Shop implements Serializable {
     private String address;
     private String photoUrl;
     private Double rate;
+    private String id;
 
-    public Shop(String name, String address,String photoUrl,Double  rate) {
+    public Shop(String name, String address,String photoUrl,Double rate,String id) {
         this.name=name;
         this.address=address;
         this.photoUrl=photoUrl;
         this.rate=rate;
+        this.id=id;
     }
 
     public String getName(){
@@ -29,5 +31,9 @@ public class Shop implements Serializable {
 
     public Double getRate(){
         return rate;
+    };
+
+    public String getId(){
+        return id;
     };
 };

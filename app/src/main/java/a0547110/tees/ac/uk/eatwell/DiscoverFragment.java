@@ -166,7 +166,7 @@ public class DiscoverFragment extends Fragment {
 
         mRecyclerView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        ShopAdapter = new ShopAdapter (getActivity (),list);
+        ShopAdapter = new ShopAdapter (getActivity (),list,0);
         mRecyclerView.setLayoutManager (new LinearLayoutManager (getActivity (), LinearLayoutManager.VERTICAL,false));
         mRecyclerView.setItemAnimator (new DefaultItemAnimator());
         mRecyclerView.setAdapter (ShopAdapter);
@@ -232,6 +232,7 @@ public class DiscoverFragment extends Fragment {
                         String name = result.getString("name");
                         String address = result.getString("vicinity");
                         Double rating = result.getDouble("rating");
+                        String Id = result.getString("place_id");
                         String photo_url;
                         try {
                             String photo_reference = result.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
@@ -239,7 +240,7 @@ public class DiscoverFragment extends Fragment {
                         }catch (Exception e){
                             photo_url = "https://archive.org/download/no-photo-available/no-photo-available.png";
                         }
-                        Shop shop = new Shop(name, address, photo_url, rating);
+                        Shop shop = new Shop(name, address, photo_url, rating, Id);
                         list.add(shop);
                     }
                     getActivity().runOnUiThread(new Runnable() {
