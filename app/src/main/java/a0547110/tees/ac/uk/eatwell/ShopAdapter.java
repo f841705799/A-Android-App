@@ -63,11 +63,14 @@ public class ShopAdapter extends RecyclerView.Adapter <ShopAdapter.MyHolder>{
                         Toast.makeText(context, "Added to Favourite", Toast.LENGTH_SHORT).show();
                     }
                 }
-                else if (layout==1){
+                else if (FirebaseAuth.getInstance().getCurrentUser()!=null && layout==1){
                     holder.db.delete("favourite","Placeid = ?",new String[]{String.valueOf(item.getId())});
                     Toast.makeText(context, "Removed from Favourite", Toast.LENGTH_SHORT).show();
                     list.remove(position);
                     notifyDataSetChanged();
+                }
+                else {
+                    Toast.makeText(context, "Please Login First", Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -28,10 +28,10 @@ public class MyImageView extends androidx.appcompat.widget.AppCompatImageView {
                     setImageBitmap(bitmap);
                     break;
                 case NETWORK_ERROR:
-                    Toast.makeText(getContext(), "网络连接失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Internet connection error", Toast.LENGTH_SHORT).show();
                     break;
                 case SERVER_ERROR:
-                    Toast.makeText(getContext(), "服务器发生错误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -49,40 +49,30 @@ public class MyImageView extends androidx.appcompat.widget.AppCompatImageView {
         super(context, attrs);
     }
 
-    //设置网络图片
+
     public void setImageURL(final String path) {
-        //开启一个线程用于联网
         new Thread() {
             @Override
             public void run() {
                 try {
-                    //把传过来的路径转成URL
                     URL url = new URL(path);
-                    //获取连接
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    //使用GET方法访问网络
                     connection.setRequestMethod("GET");
-                    //超时时间为10秒
                     connection.setConnectTimeout(10000);
-                    //获取返回码
                     int code = connection.getResponseCode();
                     if (code == 200) {
                         InputStream inputStream = connection.getInputStream();
-                        //使用工厂把网络的输入流生产Bitmap
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                        //利用Message把图片发给Handler
                         Message msg = Message.obtain();
                         msg.obj = bitmap;
                         msg.what = GET_DATA_SUCCESS;
                         handler.sendMessage(msg);
                         inputStream.close();
                     } else {
-                        //服务启发生错误
                         handler.sendEmptyMessage(SERVER_ERROR);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    //网络连接错误
                     handler.sendEmptyMessage(NETWORK_ERROR);
                 }
             }

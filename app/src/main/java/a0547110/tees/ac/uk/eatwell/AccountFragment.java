@@ -104,6 +104,7 @@ public class AccountFragment extends Fragment {
                                 ))
                                 .build()
                 );
+
             }
         });
         SettingsButton.setOnClickListener(new View.OnClickListener() {

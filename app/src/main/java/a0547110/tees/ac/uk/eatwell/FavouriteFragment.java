@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -53,6 +54,7 @@ public class FavouriteFragment extends Fragment {
     public List<Shop> list = new ArrayList<>();
     private RecyclerView mRecyclerView;
     public ShopAdapter ShopAdapter;
+    private TextView textView;
 
 
     public FavouriteFragment() {
@@ -92,6 +94,7 @@ public class FavouriteFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favourite, container, false);
         mRecyclerView = view.findViewById (R.id.reclcler_f_view);
+        textView = view.findViewById(R.id.Text_without_login);
         if (FirebaseAuth.getInstance().getCurrentUser() != null){
             // user is logged in
             userid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -110,6 +113,9 @@ public class FavouriteFragment extends Fragment {
             mRecyclerView.addItemDecoration (new DividerItemDecoration(getActivity (), DividerItemDecoration.VERTICAL));
         } else {
             // user is not logged in
+            mRecyclerView.setVisibility(View.GONE);
+            textView.setVisibility(View.VISIBLE);
+            Toast.makeText(getActivity(), "Please login first", Toast.LENGTH_SHORT).show();
 
         }
 
